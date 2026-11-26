@@ -1,0 +1,23 @@
+# Datos privados: contraseñas, WiFi, claves y registro
+config_subir_script.json
+registro_programa.txt
+Control_Reles/
+**/Control_Reles/
+.clasp.json
+.clasprc.json
+*.version_vieja
+Pines ESP32 - *.txt
+enlace_luces.txt
+
+# Descargas pesadas (el programa las baja solo)
+Dependencias_Ofline/
+
+# Instalador: va como Release de GitHub, NUNCA dentro del código
+*.exe
+setup/
+build/
+dist/
+*.spec
+
+__pycache__/
+*.pyc
