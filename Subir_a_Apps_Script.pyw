@@ -683,6 +683,32 @@ def preparar_entorno_deps():
 preparar_entorno_deps()
 
 
+def devolver_arduino_a_la_carpeta():
+    """Al cerrar el programa: si los datos de arduino-cli están en la carpeta corta (C:\\ESP32_xxxxxx) y acá hay solo un acceso,
+    se traen de vuelta adentro de Dependencias_Ofline. Así la carpeta del programa queda completa y se puede copiar a otra
+    PC (la próxima vez que se abra, si la ruta es larga, se vuelven a sacar solos)."""
+    try:
+        base = DEPS_ARDUINO
+        if os.name != "nt" or not os.path.lexists(base) or not _es_junction(base):
+            return
+        real = os.path.realpath(base)
+        if not os.path.isdir(os.path.join(real, "data")) or os.path.normcase(real) == os.path.normcase(os.path.abspath(base)):
+            return
+        _quitar_enlace(base)
+        try:
+            os.rename(real, base)                 # mismo disco: instantáneo
+        except OSError:                           # algo la está usando: queda como estaba (con el acceso)
+            if not os.path.lexists(base):
+                subprocess.run(["cmd", "/c", "mklink", "/J", base, real], capture_output=True,
+                               creationflags=CREAR_SIN_VENTANA)
+    except Exception:
+        pass
+
+
+import atexit
+atexit.register(devolver_arduino_a_la_carpeta)
+
+
 def descargar_node_portatil(log=None):
     """Baja Node.js LTS en versión portátil (zip) a Dependencias_Ofline\\node. Devuelve True si quedó listo."""
     if os.name != "nt":
