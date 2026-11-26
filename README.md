@@ -19,7 +19,9 @@ Control de luces/relés, entradas y sensores con **ESP32** desde el celular, med
 3. Seguí los pasos ① a ⑤ de la ventana (o **⚡ HACER TODO**).
 
 ## Instalador (.exe)
-El `.exe` no está en el código: se publica en [Releases](../../releases).
+El `.exe` no está en el código: se publica en [Releases](https://github.com/gustavomayoraz/luces-esp32-web/releases).
+
+⬇️ **[Descargar Subir_a_Apps_Script.exe](https://github.com/gustavomayoraz/luces-esp32-web/releases/latest/download/Subir_a_Apps_Script.exe)**
 
 ## Privacidad
 No subas `config_subir_script.json` ni la carpeta `Control_Reles`: tienen tu clave de la página y la contraseña del WiFi. El `.gitignore` ya los excluye.
