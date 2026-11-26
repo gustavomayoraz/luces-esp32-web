@@ -337,12 +337,177 @@ PLACAS = {
         ["GND", 23, "GPIO22 · LCD SCL", "TX0 · GPIO1", "RX0 · GPIO3", "GPIO21 · LCD SDA", "GND", 19, 18, 5, 17, 16, 4,
          "GPIO0 · botón BOOT", 2, 15, "GPIO8 · flash", "GPIO7 · flash", "GPIO6 · flash"]),
 }
+PLACAS["ESP32-S3 DevKitC-1 (44 pines)"] = (
+    ["3V3", "3V3", "RST", 4, 5, 6, 7, 15, 16, 17, 18, "GPIO8 · LCD SDA", "GPIO3 · arranque", "GPIO46 · arranque",
+     "GPIO9 · LCD SCL", 10, 11, 12, 13, 14, "5V", "GND"],
+    ["GND", "TX0 · GPIO43", "RX0 · GPIO44", 1, 2, 42, 41, 40, 39, "GPIO38 · LED RGB (v1.1)", "GPIO37 · PSRAM",
+     "GPIO36 · PSRAM", "GPIO35 · PSRAM", "GPIO0 · botón BOOT", "GPIO45 · arranque", "GPIO48 · LED RGB (v1.0)", 47, 21,
+     "GPIO20 · USB", "GPIO19 · USB", "GND", "GND"])
+PLACAS["ESP32-C3 SuperMini (16 pines)"] = (        # dibujada con el USB abajo (en la placa real el USB-C está arriba)
+    [0, 1, "GPIO2 · arranque", 3, "GPIO4 · LCD SDA", "3V3", "GND", "5V"],
+    [21, 20, 10, "GPIO9 · botón BOOT", "GPIO8 · LED azul / arranque", 7, 6, "GPIO5 · LCD SCL"])
+PLACAS["ESP32-C6 DevKitC-1 (32 pines)"] = (
+    ["3V3", "RST", "GPIO4 · arranque", "GPIO5 · arranque", "GPIO6 · LCD SDA", "GPIO7 · LCD SCL", 0, 1,
+     "GPIO8 · LED RGB / arranque", 10, 11, 2, 3, "5V", "GND", "NC"],
+    ["GND", "TX0 · GPIO16", "RX0 · GPIO17", "GPIO15 · arranque", 23, 22, 21, 20, 19, 18, "GPIO9 · botón BOOT", "GND",
+     "GPIO13 · USB", "GPIO12 · USB", "GND", "NC"])
 PLACA_DEFECTO = "ESP32 de 30 pines"
+
+# Datos de cada placa (solo chips con WiFi: ESP32, S3, C3, C6). pines = GPIO que se pueden configurar; analog = pines ADC1
+# (los únicos que andan bien con el WiFi prendido); usb = cómo se mira el dibujo; los def_* son la configuración inicial.
+_NOTAS_CLASICO = {2: "LED azul de la placa", 15: "cuidado al arrancar", 34: "solo entrada", 35: "solo entrada",
+                  36: "SUP/VP solo entrada", 39: "SUN/VN solo entrada"}
+_CLASICO = dict(chip="ESP32", fqbn="esp32:esp32:esp32", sda=21, scl=22, boot=0, led=2,
+                pines=[16, 17, 18, 19, 23, 25, 26, 27, 2, 4, 5, 13, 14, 32, 33, 34, 35, 36, 39, 15],
+                solo={34, 35, 36, 39}, analog=[32, 33, 34, 35, 36, 39], notas=_NOTAS_CLASICO,
+                def_sal=(16, 17, 18, 19, 23, 25, 26, 27), def_ent=(4, 5, 13, 14, 32, 33, 34, 35), def_bot=15,
+                usb="con el USB abajo",
+                fijos="GPIO0 = botón BOOT de la placa (siempre funciona como botón) · GPIO21 y 22 = pantalla LCD",
+                aviso="")
+BOARDS = {
+    "ESP32 de 30 pines": dict(_CLASICO),
+    "ESP32 de 38 pines": dict(_CLASICO),
+    "ESP32-S3 DevKitC-1 (44 pines)": dict(
+        chip="ESP32-S3", fqbn="esp32:esp32:esp32s3:CDCOnBoot=cdc", sda=8, scl=9, boot=0, led=None,
+        pines=[1, 2, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 39, 40, 41, 42, 47],
+        solo=set(), analog=[1, 2, 4, 5, 6, 7, 10], notas={},
+        def_sal=(15, 16, 17, 18, 39, 40, 41, 42), def_ent=(10, 11, 12, 13, 14, 47), def_bot=21,
+        usb="con los USB abajo",
+        fijos="GPIO0 = botón BOOT · GPIO8 y 9 = pantalla LCD · GPIO19 y 20 = USB · GPIO35 a 37 = PSRAM · GPIO38 y 48 = LED RGB",
+        aviso="Para grabar por cable usá el puerto USB marcado «USB» (o «COM»). Si no entra en modo grabación, mantené pulsado BOOT y apretá RST."),
+    "ESP32-C3 SuperMini (16 pines)": dict(
+        chip="ESP32-C3", fqbn="esp32:esp32:esp32c3:CDCOnBoot=cdc", sda=4, scl=5, boot=9, led=None,
+        pines=[0, 1, 3, 6, 7, 10, 20, 21],
+        solo=set(), analog=[0, 1, 3], notas={},
+        def_sal=(6, 7, 10), def_ent=(20, 21), def_bot=None,
+        usb="con el USB abajo",
+        fijos="GPIO9 = botón BOOT · GPIO4 y 5 = pantalla LCD · GPIO8 = LED azul (lógica invertida, no se usa) · GPIO2 y 8 = arranque",
+        aviso="Placa pequeña: quedan pocos pines libres. Confirmá la posición con lo impreso en tu placa. "
+              "Si no entra en modo grabación, mantené pulsado BOOT y conectá el USB."),
+    "ESP32-C6 DevKitC-1 (32 pines)": dict(
+        chip="ESP32-C6", fqbn="esp32:esp32:esp32c6:CDCOnBoot=cdc", sda=6, scl=7, boot=9, led=None,
+        pines=[0, 1, 2, 3, 10, 11, 18, 19, 20, 21, 22, 23],
+        solo=set(), analog=[0, 1, 2, 3], notas={},
+        def_sal=(18, 19, 20, 21, 22, 23), def_ent=(10, 11), def_bot=None,
+        usb="con los USB abajo",
+        fijos="GPIO9 = botón BOOT · GPIO6 y 7 = pantalla LCD · GPIO12 y 13 = USB · GPIO8 = LED RGB · GPIO4, 5, 8, 9 y 15 = arranque",
+        aviso="Para grabar por cable usá el puerto marcado «USB». Si no entra en modo grabación, mantené pulsado BOOT y apretá RST."),
+}
+_PERFIL_S2 = dict(
+    chip="ESP32-S2", fqbn="esp32:esp32:esp32s2", sda=8, scl=9, boot=0, led=None,
+    pines=[1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 38, 39, 40, 41, 42],
+    solo=set(), analog=[1, 2, 3, 4, 5, 6, 7, 10], notas={},
+    def_sal=(11, 12, 13, 14, 15, 16, 17, 18), def_ent=(21, 38, 39, 40, 41, 42), def_bot=None,
+    usb="", fijos="GPIO0 = botón BOOT · GPIO8 y 9 = pantalla LCD · GPIO19 y 20 = USB · GPIO26 a 37 = memoria flash/PSRAM · GPIO43 y 44 = UART0 · GPIO45 y 46 = arranque",
+    aviso="")
+# Datos por tipo de chip (solo los que tienen WiFi) para las placas genéricas que lista el Arduino IDE
+PERFILES_CHIP = {"esp32": BOARDS["ESP32 de 30 pines"], "esp32s2": _PERFIL_S2,
+                 "esp32s3": BOARDS["ESP32-S3 DevKitC-1 (44 pines)"], "esp32c3": BOARDS["ESP32-C3 SuperMini (16 pines)"],
+                 "esp32c6": BOARDS["ESP32-C6 DevKitC-1 (32 pines)"]}
+CHIP_USB_NATIVO = {"esp32s2", "esp32s3", "esp32c3", "esp32c6"}
+
+
+def archivo_boards_txt():
+    base = os.path.join(DEPS_ARDUINO, "data", "packages", "esp32", "hardware", "esp32")
+    try:
+        for v in sorted(os.listdir(base), reverse=True):
+            p = os.path.join(base, v, "boards.txt")
+            if os.path.isfile(p):
+                return p
+    except OSError:
+        pass
+    return None
+
+
+def leer_placas_core():
+    """Lista de placas del soporte ESP32 instalado (las mismas del Arduino IDE) que tienen WiFi:
+    [{'id', 'nombre', 'mcu', 'fqbn'}]. Sin internet: lee boards.txt de Dependencias_Ofline."""
+    ruta = archivo_boards_txt()
+    if not ruta:
+        return []
+    nombres, mcus, cdc = {}, {}, set()
+    try:
+        with open(ruta, "r", encoding="utf-8", errors="replace") as f:
+            for linea in f:
+                m = re.match(r"^([A-Za-z0-9_\-]+)\.(name|build\.mcu)=(.*)$", linea.strip())
+                if m:
+                    (nombres if m.group(2) == "name" else mcus)[m.group(1)] = m.group(3).strip()
+                elif ".menu.CDCOnBoot.cdc=" in linea:
+                    cdc.add(linea.split(".menu.", 1)[0].strip())
+    except OSError:
+        return []
+    out = []
+    for i, nombre in nombres.items():
+        mcu = mcus.get(i, "")
+        if mcu not in PERFILES_CHIP:
+            continue
+        fqbn = f"esp32:esp32:{i}" + (":CDCOnBoot=cdc" if (mcu in CHIP_USB_NATIVO and i in cdc) else "")
+        out.append({"id": i, "nombre": nombre, "mcu": mcu, "fqbn": fqbn})
+    out.sort(key=lambda x: x["nombre"].lower())
+    return out
+
+
+# Dibujos físicos conocidos de cada chip (USB siempre abajo). Para el resto: «Ordenado por GPIO».
+FORMATO_GPIO = "Ordenado por GPIO (sin dibujo real)"
+LAYOUTS = {
+    "esp32": {"ESP32 de 30 pines": PLACAS["ESP32 de 30 pines"], "ESP32 de 38 pines": PLACAS["ESP32 de 38 pines"]},
+    "esp32s3": {"DevKitC-1 (44 pines)": PLACAS["ESP32-S3 DevKitC-1 (44 pines)"]},
+    "esp32c3": {"SuperMini (16 pines)": PLACAS["ESP32-C3 SuperMini (16 pines)"],
+                "DevKitM-1 (30 pines)": (
+                    ["GND", "3V3", "3V3", "GPIO2 · arranque", 3, "GND", "RST", "GND", 0, 1, 10, "GND", "5V", "5V", "GND"],
+                    ["GND", 21, 20, "GND", "GPIO9 · botón BOOT", "GPIO8 · LED RGB / arranque", "GND", 7, 6,
+                     "GPIO5 · LCD SCL", "GPIO4 · LCD SDA", "GND", "GPIO18 · USB", "GPIO19 · USB", "GND"])},
+    "esp32c6": {"DevKitC-1 (32 pines)": PLACAS["ESP32-C6 DevKitC-1 (32 pines)"]},
+}
+
+
+def formatos_de(mcu):
+    return list(LAYOUTS.get(mcu, {}).keys()) + [FORMATO_GPIO]
+
+
+def registrar_placa(nombre, fqbn, mcu, formato=None):
+    """Agrega a la lista una placa genérica del Arduino IDE usando los datos de su chip y el dibujo físico elegido."""
+    perfil = PERFILES_CHIP.get(mcu)
+    if not perfil:
+        return False
+    b = dict(perfil)
+    b["fqbn"] = fqbn
+    b["generica"] = True
+    b["mcu"] = mcu
+    disp = LAYOUTS.get(mcu, {})
+    if formato not in disp and formato != FORMATO_GPIO:
+        formato = next(iter(disp), FORMATO_GPIO)
+    b["formato"] = formato
+    b["aviso"] = (f"Placa genérica del Arduino IDE ({perfil['chip']}): se usan los pines típicos de ese chip. "
+                  "Elegí en «Formato» el dibujo que más se parezca a tu placa y revisá que el pin exista y esté libre.")
+    permitidos = list(perfil["pines"])
+    if mcu == "esp32" and re.search(r"wrover|pico-?d4|pico-?v3|pico-?32", nombre, re.I):
+        permitidos = [p for p in permitidos if p not in (16, 17)]       # memoria PSRAM / flash interna
+        b["fijos"] = b["fijos"] + " · GPIO16 y 17 = memoria interna de este módulo"
+    if formato == FORMATO_GPIO:
+        b["usb"] = "ordenados por número de GPIO (la posición física depende de tu placa)"
+        b["lados"] = ("GPIO (parte 1)", "GPIO (parte 2)")
+        b["sin_dibujo"] = True
+        pines = sorted(permitidos)
+        mitad = (len(pines) + 1) // 2
+        lay = (pines[:mitad], pines[mitad:])
+    else:
+        b["usb"] = "con el USB abajo"
+        izq, der = disp[formato]
+        # solo se puede configurar un número si ese pin sirve en este chip y módulo; el resto se muestra como fijo
+        conv = lambda lista: [x if (not isinstance(x, int) or x in permitidos) else f"GPIO{x} · no disponible" for x in lista]
+        lay = (conv(izq), conv(der))
+        pines = [x for x in lay[0] + lay[1] if isinstance(x, int)]
+    b["pines"] = [p for p in permitidos if p in pines]
+    PLACAS[nombre] = lay
+    BOARDS[nombre] = b
+    return True
 
 NOMBRES_RAPIDOS_R = [""] + [f"R{i}" for i in range(1, 17)]
 NOMBRES_RAPIDOS_E = [""] + [f"E{i}" for i in range(1, 17)]
 
 CONFIG_DEFECTO = {
+    "placas_extra": {},
     "carpeta": r"C:\Users\Gustavo\Desktop\Todo lo Mio\Proyectos Python 2026\luces_esp32_google_lcd",
     "script_id": "",
     "deployment_id": "",
@@ -548,10 +713,12 @@ def comando_instalar_clasp():
 
 # ---------- Pines del ESP32 ----------
 # Orden de la lista = orden de las salidas / entradas en el sketch y en la pagina.
-PIN_LISTA = [16, 17, 18, 19, 23, 25, 26, 27, 2, 4, 5, 13, 14, 32, 33, 34, 35, 36, 39, 15]
-SOLO_ENTRADA = {34, 35, 36, 39}          # sin resistencia interna y no pueden ser salida
-NOTAS_PIN = {2: "LED azul de la placa", 15: "cuidado al arrancar",
-             34: "solo entrada", 35: "solo entrada", 36: "SUP/VP solo entrada", 39: "SUN/VN solo entrada"}
+PIN_LISTA = list(_CLASICO["pines"])
+SOLO_ENTRADA = set(_CLASICO["solo"])      # sin resistencia interna y no pueden ser salida
+NOTAS_PIN = dict(_NOTAS_CLASICO)
+LED_DEF = 2                                # pin del LED de la placa por defecto (None si la placa no tiene uno usable)
+PIN_BOOT = 0
+DEF_SAL, DEF_ENT, DEF_BOT = _CLASICO["def_sal"], _CLASICO["def_ent"], _CLASICO["def_bot"]
 
 
 RES_ETIQ = {"PULLUP": "Pull-up", "PULLDOWN": "Pull-down", "NINGUNA": "Ninguna"}
@@ -560,7 +727,7 @@ RES_CLAVE = {v: k for k, v in RES_ETIQ.items()}
 
 def nivel_salida(pines, pin):
     """Nivel que ACTIVA el rele de una salida: 'BAJO' o 'ALTO' (cada salida el suyo; GPIO2/LED siempre ALTO)."""
-    if pin == 2:
+    if LED_DEF is not None and pin == LED_DEF:
         return "ALTO"
     return "BAJO" if (pines.get(str(pin)) or {}).get("alarma") == "BAJO" else "ALTO"
 
@@ -576,7 +743,7 @@ def resistencia_de(pines, pin):
 def opciones_pin(pin):
     if pin in SOLO_ENTRADA:
         return ["—", "ENT", "SEN"]
-    if pin == 2:
+    if LED_DEF is not None and pin == LED_DEF:
         return ["—", "SAL", "LED"]       # LED = indicador de conexion (parpadea cada 3 s)
     return ["—", "SAL", "ENT", "BOT", "SEN", "LED"]      # LED = indicador de conexión (uno solo). SEN = pin reservado para un sensor (ver «Sensores y reglas»)
 
@@ -584,10 +751,10 @@ def opciones_pin(pin):
 def pines_defecto():
     p = {}
     for pin in PIN_LISTA:
-        tipo = "LED" if pin == 2 else \
-               "SAL" if pin in (16, 17, 18, 19, 23, 25, 26, 27) else \
-               "ENT" if pin in (4, 5, 13, 14, 32, 33, 34, 35) else \
-               "BOT" if pin == 15 else "—"
+        tipo = "LED" if (LED_DEF is not None and pin == LED_DEF) else \
+               "SAL" if pin in DEF_SAL else \
+               "ENT" if pin in DEF_ENT else \
+               "BOT" if (DEF_BOT is not None and pin == DEF_BOT) else "—"
         p[str(pin)] = {"tipo": tipo, "nombre": "", "alarma": "ALTO", "resistencia": "PULLDOWN"}
     return p
 
@@ -624,7 +791,7 @@ def texto_pines(pines, nivel_rele, placa="", cfg=None):
     """Texto de 'Pines ESP32.txt': a que GPIO va cada salida, entrada y boton."""
     salidas, entradas, botones = armar_pines(pines)[:3]
     posiciones = {}
-    if placa in PLACAS:
+    if placa in PLACAS and not BOARDS.get(placa, {}).get("sin_dibujo"):
         for lado, lista in zip(("izquierdo", "derecho"), PLACAS[placa]):
             for fila, item in enumerate(lista, start=1):
                 if isinstance(item, int):
@@ -637,12 +804,13 @@ def texto_pines(pines, nivel_rele, placa="", cfg=None):
         return f"  [{posiciones[pin]}{extra}]" if pin in posiciones else ""
     L = ["PINES DEL ESP32 - como cablear", ""]
     if placa in PLACAS:
-        L += [f"Placa: {placa} (vista desde arriba, con el USB abajo)"]
+        _b = BOARDS.get(placa, _CLASICO)
+        L += [f"Placa: {placa} ({'pines ' if _b.get('sin_dibujo') else 'vista desde arriba, '}{_b['usb']})"]
     L += [f"LCD I2C: SDA = GPIO{LCD_SDA}, SCL = GPIO{LCD_SCL}",
           "", "SALIDAS (reles)"]
     for pin, nombre, corto in salidas:
         m = re.fullmatch(r"Rele_(\d+)", nombre)
-        act = "" if pin == 2 else f" (se activa con nivel {nivel_salida(pines, pin)})"
+        act = "" if (LED_DEF is not None and pin == LED_DEF) else f" (se activa con nivel {nivel_salida(pines, pin)})"
         L.append(f"{('R' + m.group(1)) if m else nombre}= GPIO {pin} SAL{act}{donde(pin)}")
     if entradas:
         L += ["", "ENTRADAS (sensores)"]
@@ -710,14 +878,14 @@ def armar_pines(pines):
         if tipo == "SAL":
             if nombre:
                 corto = (sin_tildes(nombre).replace(" ", "") or "S")[:3]
-            elif pin == 2:
+            elif LED_DEF is not None and pin == LED_DEF:
                 nombre, corto = "LED_placa", "LED"
             else:
                 r += 1
                 while r in res_r:
                     r += 1
                 nombre, corto = f"Rele_{r}", f"R{r}"
-            if pin == 2 and "led" not in nombre.lower():
+            if LED_DEF is not None and pin == LED_DEF and "led" not in nombre.lower():
                 # GPIO2 enciende el LED azul de la placa: se avisa en el nombre (R9 -> "R9 LED")
                 nombre = f"{nombre} LED"[:16]
             salidas.append((pin, nombre, corto))
@@ -761,6 +929,32 @@ def resumen_pines(pines):
 PINES_ANALOGICOS = [32, 33, 34, 35, 36, 39]          # ADC1: los unicos que andan con el WiFi prendido
 PINES_DIGITALES = [4, 5, 13, 14, 15, 16, 17, 18, 19, 23, 25, 26, 27, 32, 33]   # entrada y salida (DS18B20, DHT)
 PINES_SOLO_LEER = [4, 5, 13, 14, 15, 16, 17, 18, 19, 23, 25, 26, 27, 32, 33, 34, 35, 36, 39]   # PIR
+
+
+def usar_placa(nombre):
+    """Pone en marcha los datos de la placa elegida (pines válidos, I2C del LCD, código de compilación...).
+    Devuelve el nombre de placa realmente usado."""
+    global FQBN, LCD_SDA, LCD_SCL, PIN_LISTA, SOLO_ENTRADA, NOTAS_PIN, LED_DEF, PIN_BOOT, DEF_SAL, DEF_ENT, DEF_BOT
+    global PINES_ANALOGICOS, PINES_DIGITALES, PINES_SOLO_LEER
+    if nombre not in BOARDS:
+        nombre = PLACA_DEFECTO
+    b = BOARDS[nombre]
+    FQBN = b["fqbn"]
+    LCD_SDA, LCD_SCL = b["sda"], b["scl"]
+    PIN_LISTA = list(b["pines"])
+    SOLO_ENTRADA = set(b["solo"])
+    NOTAS_PIN = dict(b["notas"])
+    LED_DEF = b["led"]
+    PIN_BOOT = b["boot"]
+    DEF_SAL, DEF_ENT, DEF_BOT = b["def_sal"], b["def_ent"], b["def_bot"]
+    libres = [p for p in PIN_LISTA if p != LED_DEF]
+    PINES_ANALOGICOS = [p for p in b["analog"] if p in PIN_LISTA]
+    PINES_DIGITALES = [p for p in libres if p not in SOLO_ENTRADA]
+    PINES_SOLO_LEER = list(libres)
+    return nombre
+
+
+usar_placa(PLACA_DEFECTO)
 TIPOS_SENSOR = {
     "LDR": "LDR · luz (analógico)",
     "PRES": "Presión 0–5 V (bomba de agua)",
@@ -1066,6 +1260,10 @@ def generar_ino(t, cfg, url):
     t = sub1(t, r"const bool RELE_ACTIVO_EN_BAJO = (true|false);", f"const bool RELE_ACTIVO_EN_BAJO = {activo_bajo};")
     t = sub1(t, r"const bool LED_ESTADO = (true|false);", f"const bool LED_ESTADO = {'true' if led_estado(cfg['pines']) else 'false'};")
     t = sub1(t, r"const int LED_ESTADO_PIN = \d+;", f"const int LED_ESTADO_PIN = {led_pin(cfg['pines']) or 2};")
+    b = BOARDS.get(cfg.get("placa"), BOARDS[PLACA_DEFECTO])
+    t = sub1(t, r"const int BOTON_PIN = \d+;", f"const int BOTON_PIN = {b['boot']};")
+    t = sub1(t, r"const int SDA_PIN = \d+;", f"const int SDA_PIN = {b['sda']};")
+    t = sub1(t, r"const int SCL_PIN = \d+;", f"const int SCL_PIN = {b['scl']};")
     lineas = []
     for pin, nombre, corto in salidas:
         nivel = "true" if nivel_salida(cfg["pines"], pin) == "BAJO" else "false"
@@ -1348,6 +1546,12 @@ def cargar_config():
             cfg.update(json.load(f))
     except Exception:
         pass
+    for n_, d_ in list((cfg.get("placas_extra") or {}).items()):
+        try:
+            registrar_placa(n_, d_["fqbn"], d_["mcu"], d_.get("formato"))
+        except Exception:
+            cfg["placas_extra"].pop(n_, None)
+    cfg["placa"] = usar_placa(cfg.get("placa"))
     base = pines_defecto()
     base.update(cfg.get("pines") or {})
     cfg["pines"] = base
@@ -1773,7 +1977,7 @@ class App:
     # ---------- estado de los pasos (se deshabilitan los ya hechos) ----------
     def firma(self, tipo):
         c = self.cfg
-        datos = [json.dumps(c.get("pines"), sort_keys=True), str(c.get("rele_bajo")),
+        datos = [json.dumps(c.get("pines"), sort_keys=True), str(c.get("rele_bajo")), str(c.get("placa")),
                  self.var_clave.get(), self.var_ssid.get(), self.var_wpass.get(),
                  self.var_apssid.get(), self.var_appass.get(), self.var_carpeta.get().strip(),
                  json.dumps([c.get("sensores"), c.get("reglas"), c.get("codigo_extra")], sort_keys=True)]
@@ -2062,6 +2266,9 @@ class App:
         perf = self.cfg.get("perfiles") or {}
         if n in perf:
             pr = perf[n]
+            if pr.get("placa") in BOARDS:
+                self.cfg["placa"] = pr["placa"]
+            usar_placa(self.cfg.get("placa"))
             base = pines_defecto()
             base.update(pr.get("pines") or {})
             self.cfg["pines"] = base
@@ -2289,9 +2496,16 @@ class App:
         fp = tk.Frame(w, bg="#f8f9fa"); fp.pack(pady=(6, 0))
         tk.Label(fp, text="Placa:", bg="#f8f9fa", font=("Segoe UI", 9, "bold")).pack(side="left")
         vplaca = tk.StringVar(value=self.cfg.get("placa", PLACA_DEFECTO) if self.cfg.get("placa") in PLACAS else PLACA_DEFECTO)
-        cbplaca = ttk.Combobox(fp, textvariable=vplaca, values=list(PLACAS.keys()), state="readonly", width=20)
+        cbplaca = ttk.Combobox(fp, textvariable=vplaca, values=list(PLACAS.keys()), state="readonly", width=30)
         cbplaca.pack(side="left", padx=4)
-        tk.Label(fp, text="Vista desde arriba, con el USB abajo. LCD I2C fijo: SDA = GPIO21, SCL = GPIO22.",
+        _bd = BOARDS.get(vplaca.get(), _CLASICO)
+        _vista = ("Pines " + _bd["usb"]) if _bd.get("sin_dibujo") else f"Vista desde arriba, {_bd['usb']}"
+        fmt_v = tk.StringVar(value=_bd.get("formato", ""))
+        if _bd.get("generica"):
+            tk.Label(fp, text="Formato:", bg="#f8f9fa", font=("Segoe UI", 9, "bold")).pack(side="left", padx=(6, 0))
+            cbfmt = ttk.Combobox(fp, textvariable=fmt_v, values=formatos_de(_bd["mcu"]), state="readonly", width=24)
+            cbfmt.pack(side="left", padx=4)
+        tk.Label(fp, text=f"{_vista}. LCD I2C fijo: SDA = GPIO{_bd['sda']}, SCL = GPIO{_bd['scl']}.",
                  bg="#f8f9fa", fg="#7f8c8d", font=("Segoe UI", 8)).pack(side="left", padx=6)
         # los botones van fijos abajo (se empaquetan primero) y la lista de pines se desplaza si no entra en pantalla
         bf = tk.Frame(w, bg="#f8f9fa"); bf.pack(side="bottom", pady=(4, 12))
@@ -2419,8 +2633,9 @@ class App:
                 hijo.destroy()
             widgets.clear()
             izq, der = PLACAS[vplaca.get()]
-            for col, (titulo, lado) in enumerate((("◀ LADO IZQUIERDO", izq), ("LADO DERECHO ▶", der))):
-                base = col * 6
+            _lados = BOARDS.get(vplaca.get(), {}).get("lados") or ("◀ LADO IZQUIERDO", "LADO DERECHO ▶")
+            for col, (titulo, lado) in enumerate(((_lados[0], izq), (_lados[1], der))):
+                base = col * 7
                 tk.Label(cuerpo, text=titulo, font=("Segoe UI", 9, "bold"), bg="#f8f9fa", fg="#2980b9").grid(row=0, column=base, columnspan=6, pady=(0, 2))
                 tk.Label(cuerpo, text="Tipo · Nombre · Nivel · Resistencia", font=("Segoe UI", 7), bg="#f8f9fa", fg="#7f8c8d").grid(row=0, column=base + 3, columnspan=3, sticky="e")
                 for fila, item in enumerate(lado, start=1):
@@ -2446,6 +2661,18 @@ class App:
                              fg="#e67e22").grid(row=fila, column=base + 5, padx=(0, 10))
                     widgets[pin] = (en, ca, cr)
                     reflejar(pin)
+            _bdv = BOARDS.get(vplaca.get(), {})
+            filas = max(len(izq), len(der))
+            if _bdv.get("sin_dibujo"):
+                tk.Frame(cuerpo, bg="#f8f9fa", width=14).grid(row=1, column=6, rowspan=filas)
+            else:                            # la placa vista desde arriba, con el USB siempre abajo
+                pl = tk.Frame(cuerpo, bg="#1e5c3a", width=74, highlightthickness=2, highlightbackground="#0e3a22")
+                pl.grid(row=1, column=6, rowspan=filas, sticky="ns", padx=6)
+                pl.pack_propagate(False)
+                tk.Label(pl, text="((·))\nWiFi", bg="#1e5c3a", fg="#bdc3c7", font=("Segoe UI", 8)).pack(side="top", pady=(8, 2))
+                tk.Label(pl, text=_bdv.get("chip", "ESP32"), bg="#2c3e50", fg="white", font=("Segoe UI", 8, "bold"), width=9, pady=6).pack(side="top", pady=4)
+                tk.Label(pl, text="⏏ USB", bg="#95a5a6", fg="#2c3e50", font=("Segoe UI", 8, "bold"), width=9, pady=3).pack(side="bottom", pady=(0, 4))
+                tk.Label(pl, text="▲ arriba", bg="#1e5c3a", fg="#7fb99a", font=("Segoe UI", 7)).pack(side="top", pady=(30, 0))
             w.update_idletasks()
             if medida:                       # al cambiar de placa, la lista se reajusta (con barra si no entra)
                 ajustar_lista()
@@ -2464,12 +2691,122 @@ class App:
             else:
                 barra_y.pack_forget()
             lienzo.yview_moveto(0)
-        cbplaca.bind("<<ComboboxSelected>>", dibujar)
+        def cambiar_placa(*_):
+            nueva, actual = vplaca.get(), self.cfg.get("placa", PLACA_DEFECTO)
+            if nueva == actual:
+                return
+            bn, ba = BOARDS[nueva], BOARDS.get(actual, _CLASICO)
+            if bn["fqbn"] == ba["fqbn"] and bn["pines"] == ba["pines"]:
+                self.cfg["placa"] = nueva            # 30 <-> 38 pines: solo cambia el dibujo
+                dibujar()
+                return
+            hay = bool(self.cfg.get("sensores") or self.cfg.get("reglas"))
+            msg = (f"Vas a cambiar a «{nueva}» ({bn['chip']}).\n\nLos pines vuelven a los valores por defecto de esa placa"
+                   + (" y se quitan los sensores y reglas (usan pines de la placa anterior)." if hay else ".")
+                   + "\n\n¿Continuar?")
+            if not messagebox.askyesno("Cambiar de placa", msg, parent=w):
+                vplaca.set(actual)
+                return
+            self.cfg["placa"] = usar_placa(nueva)
+            self.cfg["pines"] = pines_defecto()
+            if hay:
+                self.cfg["sensores"], self.cfg["reglas"] = [], []
+            self._tras_cambio_config(f"🔧 Placa cambiada a {nueva}: pines por defecto cargados.")
+            w.destroy()
+            self.abrir_pines()
+        cbplaca.bind("<<ComboboxSelected>>", cambiar_placa)
+
+        def cambiar_formato(*_):
+            nombre, nuevo = vplaca.get(), fmt_v.get()
+            b0 = BOARDS.get(nombre, {})
+            if not b0.get("generica") or nuevo == b0.get("formato"):
+                return
+            antes = list(b0["pines"])
+            registrar_placa(nombre, b0["fqbn"], b0["mcu"], nuevo)
+            self.cfg.setdefault("placas_extra", {}).setdefault(nombre, {"fqbn": b0["fqbn"], "mcu": b0["mcu"]})["formato"] = nuevo
+            if sorted(BOARDS[nombre]["pines"]) != sorted(antes):
+                messagebox.showinfo("Formato", "Este dibujo tiene otros pines disponibles: se cargan los valores por defecto.", parent=w)
+                self.cfg["placa"] = usar_placa(nombre)
+                self.cfg["pines"] = pines_defecto()
+                self.cfg["sensores"], self.cfg["reglas"] = [], []
+                self._tras_cambio_config(f"🔧 Formato {nuevo}: pines por defecto cargados.")
+                w.destroy()
+                self.abrir_pines()
+                return
+            usar_placa(nombre)
+            dibujar()
+        if _bd.get("generica"):
+            cbfmt.bind("<<ComboboxSelected>>", cambiar_formato)
+
+        def buscar_placa():
+            """Lista con buscador de todas las placas ESP32 con WiFi del Arduino IDE (se leen de la carpeta, sin internet)."""
+            todas = leer_placas_core()
+            if not todas:
+                messagebox.showinfo("Todas las placas", "Todavía no está instalado el soporte ESP32 en Dependencias_Ofline.\n\n"
+                                    "Se baja solo la primera vez que abrís el programa (la ventana de verificación). "
+                                    "Cuando termine, volvé a abrir esta ventana.", parent=w)
+                return
+            d = tk.Toplevel(w)
+            d.title("🔍 Todas las placas ESP32 con WiFi")
+            d.configure(bg="#f8f9fa")
+            d.transient(w)
+            d.grab_set()
+            tk.Label(d, text="Escribí para buscar (igual que en el Arduino IDE):", bg="#f8f9fa", font=("Segoe UI", 9)).pack(padx=12, pady=(10, 2), anchor="w")
+            vb = tk.StringVar()
+            ent = tk.Entry(d, textvariable=vb, width=60)
+            ent.pack(padx=12, fill="x")
+            fl = tk.Frame(d, bg="#f8f9fa")
+            fl.pack(padx=12, pady=6, fill="both", expand=True)
+            sb = ttk.Scrollbar(fl, orient="vertical")
+            lb = tk.Listbox(fl, height=16, width=64, yscrollcommand=sb.set, exportselection=False)
+            sb.config(command=lb.yview)
+            lb.pack(side="left", fill="both", expand=True)
+            sb.pack(side="left", fill="y")
+            visibles = []
+            lbl_n = tk.Label(d, text="", bg="#f8f9fa", fg="#7f8c8d", font=("Segoe UI", 8))
+            lbl_n.pack()
+
+            def filtrar(*_):
+                q = vb.get().strip().lower()
+                lb.delete(0, "end")
+                visibles.clear()
+                for x in todas:
+                    if not q or q in x["nombre"].lower() or q in x["mcu"] or q in x["id"].lower():
+                        visibles.append(x)
+                        lb.insert("end", f"{x['nombre']}   ·   {PERFILES_CHIP[x['mcu']]['chip']}")
+                lbl_n.config(text=f"{len(visibles)} placas con WiFi (ESP32, S2, S3, C3 y C6)")
+            vb.trace_add("write", filtrar)
+            filtrar()
+
+            def elegir(*_):
+                sel = lb.curselection()
+                if not sel:
+                    return
+                x = visibles[sel[0]]
+                nombre = x["nombre"]
+                if nombre in BOARDS and BOARDS[nombre]["fqbn"] != x["fqbn"]:
+                    nombre = f"{nombre} [{x['id']}]"
+                registrar_placa(nombre, x["fqbn"], x["mcu"])
+                self.cfg.setdefault("placas_extra", {})[nombre] = {"fqbn": x["fqbn"], "mcu": x["mcu"], "formato": BOARDS[nombre]["formato"]}
+                cbplaca.config(values=list(PLACAS.keys()))
+                d.destroy()
+                vplaca.set(nombre)
+                cambiar_placa()
+            lb.bind("<Double-Button-1>", elegir)
+            bfd = tk.Frame(d, bg="#f8f9fa")
+            bfd.pack(pady=(2, 10))
+            tk.Button(bfd, text="✅ Usar esta placa", command=elegir, bg="#27ae60", fg="white", font=("Segoe UI", 9, "bold"), width=18).pack(side="left", padx=4)
+            tk.Button(bfd, text="Cancelar", command=d.destroy, width=10).pack(side="left", padx=4)
+            ent.focus_set()
+        tk.Button(fp, text="🔍 Todas las placas...", command=buscar_placa, font=("Segoe UI", 8)).pack(side="left", padx=4)
         dibujar()
         tk.Label(w, text="Nombre: elegí R1, R2... / E1, E2... del combo (los que ya usaste no aparecen) o escribí el tuyo; vacío = automático.  Columna ALTO/BAJO: en ENT es el nivel de ALARMA y en SAL el nivel que ACTIVA el relé (elegí uno por cada salida); Resistencia (solo ENT, se pone sola al revés de la alarma: ALTO→Pull-down, BAJO→Pull-up; podés cambiarla): Pull-up = reposo en ALTO (contacto a GND), Pull-down = reposo en BAJO (contacto a 3,3 V), Ninguna = flotante.",
                  font=("Segoe UI", 8), bg="#f8f9fa", fg="#7f8c8d", wraplength=900, justify="center").pack()
-        tk.Label(w, text="Fijos (no se pueden usar): GPIO0 = botón BOOT de la placa (siempre funciona como botón) · GPIO21 y 22 = pantalla LCD",
-                 font=("Segoe UI", 8), bg="#f8f9fa", fg="#7f8c8d").pack()
+        tk.Label(w, text="Fijos (no se pueden usar): " + _bd["fijos"],
+                 font=("Segoe UI", 8), bg="#f8f9fa", fg="#7f8c8d", wraplength=900, justify="center").pack()
+        if _bd.get("aviso"):
+            tk.Label(w, text="ℹ️ " + _bd["aviso"], font=("Segoe UI", 8), bg="#f8f9fa", fg="#2980b9",
+                     wraplength=900, justify="center").pack()
         lbl = tk.Label(w, text="", bg="#f8f9fa", fg="#2c3e50", font=("Segoe UI", 9, "bold"))
         lbl.pack(pady=2)
 
@@ -2519,7 +2856,7 @@ class App:
                 except ValueError:
                     pass
             self.cfg["pines"] = p
-            niv = [d["alarma"] for k, d in p.items() if d["tipo"] == "SAL" and k != "2"]
+            niv = [d["alarma"] for k, d in p.items() if d["tipo"] == "SAL" and k != str(LED_DEF)]
             self.cfg["rele_bajo"] = "BAJO" if niv and all(n == "BAJO" for n in niv) else "ALTO"
             self.cfg["placa"] = vplaca.get()
             self.guardar()
