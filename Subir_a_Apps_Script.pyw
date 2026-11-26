@@ -321,7 +321,17 @@ URL_CLI = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Windows_6
 LIBRERIAS = ["LiquidCrystal I2C"]
 NUCLEO_PROBADO = "3.3.12"       # version del soporte ESP32 con la que se probo el sketch
 
-DIR_APP = os.path.dirname(os.path.abspath(sys.argv[0]))
+if getattr(sys, "frozen", False):
+    # Como .exe: todo (configuración, dependencias, proyectos y registro) va dentro de UNA carpeta «Luces_ESP32»
+    # junto al .exe, así no quedan archivos sueltos en el escritorio ni donde lo pongas.
+    _dir_exe = os.path.dirname(os.path.abspath(sys.executable))
+    DIR_APP = _dir_exe if os.path.basename(_dir_exe).lower() == "luces_esp32" else os.path.join(_dir_exe, "Luces_ESP32")
+    try:
+        os.makedirs(DIR_APP, exist_ok=True)
+    except OSError:
+        DIR_APP = _dir_exe
+else:
+    DIR_APP = os.path.dirname(os.path.abspath(sys.argv[0]))
 RUTA_CONFIG = os.path.join(DIR_APP, "config_subir_script.json")
 
 # Posición física de los pines, vista desde arriba con el USB ABAJO (de arriba hacia abajo).
