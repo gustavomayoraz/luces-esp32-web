@@ -1600,8 +1600,8 @@ NOMBRES_RAPIDOS_E = [""] + [f"E{i}" for i in range(1, 17)]
 CONFIG_DEFECTO = {
     "placas_extra": {},
     "carpeta": r"C:\Users\Gustavo\Desktop\Todo lo Mio\Proyectos Python 2026\luces_esp32_google_lcd",
-    "script_id": "1iNo80j32mz9hikSaWbHrHad2mpZrJSRRu68sj3c8W-JfVf3OdFZcxQmY",
-    "deployment_id": "AKfycbxuVQN3QUlaosYwJUpQWNAgdtfIduYaIQAuD1J75zhCFeNlXLAGccUhr3V3gmMbRjtw",
+    "script_id": "",
+    "deployment_id": "",
     "clave": "",
     "wifi_ssid": "",
     "wifi_pass": "",
