@@ -2771,7 +2771,7 @@ class App:
         tk.Label(_bl, text="LUMIO", font=("Segoe UI", 24, "bold"), bg=BG, fg="#0e7490").pack(anchor="w")
         tk.Label(_bl, text="Control de luces, entradas y sensores con ESP32 · desde tu celular", font=("Segoe UI", 9),
                  bg=BG, fg="#7f8c8d").pack(anchor="w")
-        tk.Label(cab, text="v35", font=("Segoe UI", 8, "bold"), bg=BG, fg="#8e44ad").pack(side="right", anchor="ne")
+        tk.Label(cab, text="v36", font=("Segoe UI", 8, "bold"), bg=BG, fg="#8e44ad").pack(side="right", anchor="ne")
         tk.Frame(self.v, bg="#2980b9", height=2).grid(row=0, column=0, columnspan=2, sticky="sew", padx=12)
         tk.Label(self.v, text="Hacé los pasos ① y ②; después usá ⚡ HACER TODO. Cada paso se habilita cuando el anterior terminó.",
                  font=("Segoe UI", 9), bg=BG, fg="#7f8c8d").grid(row=1, column=0, columnspan=2, pady=(0, 2))
@@ -6203,9 +6203,9 @@ def plantilla(nombre):
     return zlib.decompress(base64.b64decode("".join(_PLANTILLAS[nombre].split()))).decode("utf-8")
 
 
-MARCAS_PLANTILLA = {"Codigo.gs": "PLANTILLA_MULTI v23", "Pagina.html": "PLANTILLA_MULTI v28",
+MARCAS_PLANTILLA = {"Codigo.gs": "PLANTILLA_MULTI v24", "Pagina.html": "PLANTILLA_MULTI v29",
                     ARCHIVO_INO: "PLANTILLA_MULTI v25"}
-MARCA_PLANTILLA = "PLANTILLA_MULTI v29"
+MARCA_PLANTILLA = "PLANTILLA_MULTI v30"
 
 
 def asegurar_archivos(carpeta, forzar=False):
