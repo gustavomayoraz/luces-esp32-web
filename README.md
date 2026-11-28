@@ -8,6 +8,8 @@ Control de luces/relés, entradas y sensores con **ESP32** desde el celular, med
   - crea el `.ino`, el `Codigo.gs` y la `Pagina.html` con tus datos (pines, WiFi, clave);
   - sube y publica el script en Google con clasp;
   - compila y graba el ESP32 por USB o por WiFi (OTA).
+- **Luz crepuscular**: cada salida puede prenderse y apagarse sola por horario y/o sensor de luz (solapa «Crepuscular» de la página). La hora la lleva el propio ESP32 por internet (NTP) y toma la zona horaria del lugar donde está instalado.
+- **Actualizar el ESP32 desde cualquier parte**: el botón **☁️ Publicar firmware** compila y sube el programa a tu Google Drive; desde la página se toca **⬆️ Actualizar placa** y el ESP32 se instala la versión nueva solo. La primera vez que una placa recibe este sketch hay que grabarla por cable o por WiFi en su misma red; después ya se actualiza por la nube. La primera vez hay que dar permiso a Drive (función `autorizarDrive` en el editor de Apps Script).
 - Sensores (LDR, presión, PIR, DS18B20, DHT22/11, analógico genérico) y reglas automáticas.
 - Librerías extra y código propio para módulos nuevos.
 - `Tutorial_Luces_ESP32.docx`: tutorial paso a paso.
